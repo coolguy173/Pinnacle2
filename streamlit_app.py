@@ -1,86 +1,116 @@
 import streamlit as st
+import pandas as pd
 
-st.set_page_config(page_title="SmartInvest", page_icon="💸", layout="centered")
+# --- App Config ---
+st.set_page_config(
+    page_title="Pinnacle - Smarter Investments",
+    page_icon="📈",
+    layout="wide"
+)
 
-# --- Session state for page navigation ---
-if "page" not in st.session_state:
-    st.session_state.page = "start"
+# --- Header ---
+st.title("📈 Pinnacle")
+st.subheader("Smarter Investments, Made Simple")
 
-def go_to(page):
-    st.session_state.page = page
+# --- Navigation ---
+page = st.sidebar.radio(
+    "Navigate",
+    ["🏠 Home", "🔎 Research", "💰 Mutual Funds", "📊 Strategies", "ℹ️ About"]
+)
 
-# --- START PAGE ---
-if st.session_state.page == "start":
-    st.title("💸 Welcome to SmartInvest")
-    st.subheader("Your Personal Investment Recommender")
-
+# --- Home Page ---
+if page == "🏠 Home":
+    st.header("🏠 Welcome to Pinnacle")
     st.write("""
-    🚀 This app helps you decide where to invest based on your salary 
-    and risk preference.  
-    ✅ Simple, beginner-friendly, and educational.  
-    ⚠️ Not financial advice.
+    **Pinnacle** helps you explore **mutual funds, strategies, and insights** 
+    so you can grow your money smarter.  
+
+    👉 Use the **sidebar** to start exploring.
     """)
 
-    st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=200)
+    st.markdown("### Why Choose Pinnacle?")
+    st.success("✔ Beginner-friendly explanations")
+    st.success("✔ Salary-based recommendations (coming soon!)")
+    st.success("✔ Clear breakdown of risk vs reward")
 
-    st.button("👉 Get Started", on_click=lambda: go_to("main"))
+# --- Research Page ---
+elif page == "🔎 Research":
+    st.header("🔎 Research Mutual Funds")
 
-# --- MAIN PAGE ---
-elif st.session_state.page == "main":
-    st.title("💸 SmartInvest – Personal Investment Recommender")
-
-    salary = st.number_input("Enter your monthly salary (₹)", min_value=1000, step=1000)
-
-    percent_invest = st.slider("What % of your salary do you want to invest?", 1, 50, 20)
-
-    investment_info = {
-        "Mutual Funds / ETFs": {
-            "desc": "✅ Professionally managed, diversified, medium risk. Good for beginners.",
-            "link": "https://www.groww.in/mutual-funds"
-        },
-        "Bonds / FD": {
-            "desc": "✅ Safe & stable, low returns but secure. Protects capital.",
-            "link": "https://www.rbi.org.in/Scripts/BS_ViewBonds.aspx"
-        },
-        "Gold": {
-            "desc": "✅ Hedge against inflation, stable over long term. Can invest via ETFs or Gold Bonds.",
-            "link": "https://www.nseindia.com/products-services/etf-gold"
-        },
-        "Stocks": {
-            "desc": "⚠️ High risk, high return. Needs research & patience.",
-            "link": "https://www.moneycontrol.com/stocksmarketsindia/"
-        },
-        "Crypto": {
-            "desc": "⚠️ Very high risk, very volatile. Only invest small % if you understand it.",
-            "link": "https://www.coinmarketcap.com/"
-        },
-        "Recurring Deposit (RD)": {
-            "desc": "✅ Bank product, fixed savings each month, very safe but low returns.",
-            "link": "https://www.sbi.co.in/web/personal-banking/investments-deposits/rd"
-        }
+    # Demo dataset
+    data = {
+        "Fund Name": [
+            "Axis Bluechip Fund",
+            "HDFC Hybrid Equity Fund",
+            "SBI Small Cap Fund",
+            "ICICI Prudential Balanced Advantage",
+            "Kotak Emerging Equity Fund"
+        ],
+        "Category": [
+            "Large Cap Equity",
+            "Hybrid Equity + Debt",
+            "Small Cap Equity",
+            "Dynamic Asset Allocation",
+            "Mid Cap Equity"
+        ],
+        "Risk": ["Moderate", "Moderately High", "High", "Moderate", "High"],
+        "3Y Returns": ["12.5%", "10.2%", "18.7%", "9.8%", "16.3%"],
+        "Rating (★)": [5, 4, 4, 3, 4]
     }
 
-    if salary > 0:
-        invest_amount = (salary * percent_invest) / 100
-        st.subheader(f"You can invest: ₹{invest_amount:,.2f} per month")
+    df = pd.DataFrame(data)
 
-        if invest_amount < 5000:
-            suggestion = ["Recurring Deposit (RD)", "Mutual Funds / ETFs"]
-            st.info("💡 Suggestion: Start small & safe → RD or Mutual Funds / ETFs.")
-        elif 5000 <= invest_amount < 20000:
-            suggestion = ["Mutual Funds / ETFs", "Bonds / FD", "Gold"]
-            st.info("💡 Suggestion: Mix it up → 60% Mutual Funds, 30% Bonds/FD, 10% Gold.")
-        else:
-            suggestion = ["Mutual Funds / ETFs", "Bonds / FD", "Gold", "Stocks", "Crypto"]
-            st.info("💡 Suggestion: Higher salary = higher flexibility → diversified portfolio.")
+    # Show table
+    st.dataframe(df, use_container_width=True)
 
-        st.subheader("📊 Explore Your Options")
-        choice = st.selectbox("Select an investment to learn more:", suggestion)
+    # Select fund for details
+    fund = st.selectbox("Pick a fund to learn more:", df["Fund Name"])
 
-        if choice:
-            st.write(investment_info[choice]["desc"])
-            st.markdown(f"[🌐 Learn More Here]({investment_info[choice]['link']})")
+    fund_details = df[df["Fund Name"] == fund].iloc[0]
+    st.subheader(f"📊 {fund}")
+    st.write(f"**Category:** {fund_details['Category']}")
+    st.write(f"**Risk Level:** {fund_details['Risk']}")
+    st.write(f"**3Y Returns:** {fund_details['3Y Returns']}")
+    st.write(f"**Rating:** {'⭐' * fund_details['Rating (★)']}")
 
-        st.caption("⚠️ Disclaimer: This is not financial advice. Do your own research before investing.")
+    st.info("⚠ Past returns do not guarantee future results.")
 
-    st.button("⬅️ Back to Home", on_click=lambda: go_to("start"))
+# --- Mutual Funds (Basic View) ---
+elif page == "💰 Mutual Funds":
+    st.header("💰 Mutual Funds (Quick View)")
+    st.write("Explore some popular funds:")
+
+    funds = {
+        "Axis Bluechip Fund": "Large cap equity, long-term growth.",
+        "HDFC Hybrid Equity Fund": "Mix of equity + debt, balanced returns.",
+        "SBI Small Cap Fund": "High-risk, high-reward small cap equity.",
+        "ICICI Balanced Advantage": "Shifts between debt & equity dynamically.",
+    }
+
+    for name, desc in funds.items():
+        with st.expander(name):
+            st.write(desc)
+
+# --- Strategies Page ---
+elif page == "📊 Strategies":
+    st.header("📊 Investment Strategies")
+    st.write("""
+    Coming soon: **personalized recommendations** based on  
+    - your **salary percentage** you want to invest  
+    - your **risk appetite**  
+    - your **time horizon**  
+    """)
+    st.warning("🚧 Feature in progress...")
+
+# --- About Page ---
+elif page == "ℹ️ About":
+    st.header("ℹ️ About Pinnacle")
+    st.write("""
+    **Pinnacle** is built to make investment knowledge **accessible** to everyone.  
+
+    - Beginner-friendly explanations  
+    - Mutual fund insights  
+    - Future scope: salary-based recommendations  
+    """)
+    st.caption("🚀 Built with simplicity and growth in mind.")
+
