@@ -1,13 +1,12 @@
-# 💸 SmartInvest – Personal Investment Recommender
+# Pinnacle
 
-SmartInvest is a beginner-friendly **Streamlit app** that suggests investment options 
-based on your salary and risk preference.
+Pinnacle is a simple, beginner-friendly app designed to guide users into smarter investments.  
+It helps you explore **mutual funds**, understand financial strategies, and make informed decisions tailored to your salary and goals.
 
-## 🚀 Features
-- Enter your salary & % to invest
-- Get personalized suggestions
-- Learn more with external links (Mutual Funds, Bonds, Gold, Stocks, Crypto, RD)
-- Simple **start page → main page navigation**
-
+## Features
+- Clean, modern landing page
+- Mutual fund information & recommendations
+- Easy-to-use navigation
+- Lightweight, built with Python (Streamlit) + HTML
 
    
